@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<html>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Bulma CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    </head>
+    <body>
+        <div class="section">
+            <div class="container">
+                <h1 class="title">
+                    周六打篮球
+                </h1>
+                <p>
+                    日期：{{ current_date }}<br />
+                </p>
+                <p>
+                    地点：{{ address[0] }} <a href="{{ address[1] }}">Google Map</a>
+                </p>
+            </div>
+        </div>
+
+        <nav class="panel">
+            <p class="panel-heading">
+                我要参加 ({{ registered_users|length }}人)
+            </p>
+            {% for user in registered_users %}
+            <a class="panel-block is-active" href="/unregister/{{ user[0] }}">
+                <span class="panel-icon">
+                    <i class="fas fa-book" aria-hidden="true"></i>
+                </span>
+                {{ user[1] }}
+            </a>
+            {% endfor %}
+        </nav>
+
+        <nav class="panel">
+            <p class="panel-heading">
+                我不参加
+            </p>
+            {% for user in unregistered_users %}
+            <a class="panel-block is-active" href="/register/{{ user[0] }}">
+                <span class="panel-icon">
+                    <i class="fas fa-book" aria-hidden="true"></i>
+                </span>
+                {{ user[1] }}
+            </a>
+            {% endfor %}
+        </nav>
+
+        <div class="block">
+            <form action="/add_user" method="post">
+                <div class="field">
+                    <label class="label">新成员</label>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" name="name" placeholder="姓名 | 昵称">
+                    </div>
+                </div>
+                 <div class="field">
+                    <div class="control">
+                        <input type="submit" class="button is-link" value="添加">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        {% if is_admin %}
+        <nav class="panel">
+            <p class="panel-heading">
+                删除用户
+            </p>
+            {% for user in unregistered_users %}
+            <a class="panel-block is-active" href="/delete/{{ user[0] }}">
+                <span class="panel-icon">
+                    <i class="fas fa-book" aria-hidden="true"></i>
+                </span>
+                {{ user[1] }}
+            </a>
+            {% endfor %}
+        </nav>
+        {% endif %}
+
+        {% if is_admin %}
+        <div class="block">
+            <form action="/change_address" method="post">
+                <div class="field">
+                    <label class="label">修改地点</label>
+                </div>
+                <div class="field">
+
+                    <div class="control">
+                        <input class="input" type="text" name="name" placeholder="地点名称">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" name="map_link" placeholder="地图链接">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <input type="submit" class="button is-link" value="修改">
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+    </body>
+</html>
+
+
+
+
