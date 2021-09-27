@@ -4,8 +4,9 @@
 A light-weight and mobile-first app that helps to gather the intention to play basketball on weekends.
 
 Features:
-1. Automatic refresh the date (every Saturday). The cutoff time is Saturday midnight ET.
-2. Persistent user information. Only needs to add once, and the users will be carried over to next week.
+1. One-click on names to register/unregister.
+2. Automatic refresh the date (every Saturday). The cutoff time is Saturday midnight ET.
+3. Persistent user information. Only needs to add once, and the users will be carried over to next week.
 
 ### Open source framework used:
 - Flask - Python web development framework: https://flask.palletsprojects.com/en/2.0.x/
