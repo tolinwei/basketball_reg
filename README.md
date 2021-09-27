@@ -1,7 +1,7 @@
 
 # basketball_reg
 
-A light-weight and mobile-first app that helps to gather the intention to play basketball on weekends.
+A light-weight and mobile-first app that gathers the intention to play basketball on weekends.
 
 Features:
 1. One-click on names to register/unregister.
