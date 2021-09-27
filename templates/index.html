@@ -31,6 +31,10 @@
         <div class="block">
         </div>
 
+        <progress class="progress is-success" value="{{ registered_users|length * 100 / (unregistered_users|length + registered_users|length) }}" max="100">
+            {{ registered_users|length * 100 / (unregistered_users|length + registered_users|length) }}
+        </progress>
+
         <nav class="panel is-success">
             <p class="panel-heading">
                 我要参加 ({{ registered_users|length }}人)
