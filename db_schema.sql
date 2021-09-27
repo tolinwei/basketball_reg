@@ -1,0 +1,4 @@
+CREATE TABLE date (id INTEGER PRIMARY KEY, date CHAR (64));
+CREATE TABLE registration (id INTEGER PRIMARY KEY, date_id INTEGER, user_id INTEGER);
+CREATE TABLE user (id INTEGER PRIMARY KEY, name CHAR (64));
+CREATE TABLE address (id INTEGER PRIMARY KEY, name CHAR (64), map_link TEXT);
