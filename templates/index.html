@@ -9,21 +9,29 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     </head>
     <body>
-        <div class="section">
+        <div class="section hero is-info">
             <div class="container">
                 <h1 class="title">
                     周六打篮球
                 </h1>
                 <p>
-                    日期：{{ current_date }}<br />
+                    日期：{{ current_date }}
                 </p>
                 <p>
-                    地点：{{ address[0] }} <a href="{{ address[1] }}">Google Map</a>
+                    时间：10:00 AM ET
+                </p>
+                <p>
+                    <!-- Hack to the link to normalize the looking in WeChat browser -->
+                    地点：{{ address[0] }} | <a href="{{ address[1] }}" style="text-decoration: none; color: white">Google Map</a>
                 </p>
             </div>
         </div>
 
-        <nav class="panel">
+        <!-- Leaving some space below the header -->
+        <div class="block">
+        </div>
+
+        <nav class="panel is-success">
             <p class="panel-heading">
                 我要参加 ({{ registered_users|length }}人)
             </p>
@@ -37,7 +45,7 @@
             {% endfor %}
         </nav>
 
-        <nav class="panel">
+        <nav class="panel is-warning">
             <p class="panel-heading">
                 我不参加
             </p>
@@ -52,8 +60,8 @@
         </nav>
 
         <div class="block">
-            <form action="/add_user" method="post">
-                <div class="field">
+            <form action="/add_user" class="box" method="post">
+                <div class="field is-grouped is-grouped-centered">
                     <label class="label">新成员</label>
                 </div>
                 <div class="field">
@@ -63,16 +71,16 @@
                 </div>
                  <div class="field is-grouped is-grouped-centered">
                     <div class="control">
-                        <input type="submit" class="button is-link" value="添加">
+                        <input type="submit" class="button is-info" value="添加">
                     </div>
                 </div>
             </form>
         </div>
 
         {% if is_admin %}
-        <nav class="panel">
+        <nav class="panel is-danger">
             <p class="panel-heading">
-                删除用户
+                删除成员
             </p>
             {% for user in unregistered_users %}
             <a class="panel-block is-active" href="/delete/{{ user[0] }}">
@@ -87,8 +95,8 @@
 
         {% if is_admin %}
         <div class="block">
-            <form action="/change_address" method="post">
-                <div class="field">
+            <form action="/change_address" class="box" method="post">
+                <div class="field is-grouped is-grouped-centered">
                     <label class="label">修改地点</label>
                 </div>
                 <div class="field">
@@ -104,13 +112,16 @@
                 </div>
                 <div class="field is-grouped is-grouped-centered">
                     <div class="control">
-                        <input type="submit" class="button is-link" value="修改">
+                        <input type="submit" class="button is-info" value="修改">
                     </div>
                 </div>
             </form>
         </div>
         {% endif %}
 
+        <!-- Leaving some space on the bottom of the page -->
+        <div class="block">
+        </div>
     </body>
 </html>
 
