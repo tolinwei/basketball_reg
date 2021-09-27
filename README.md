@@ -1,15 +1,15 @@
 
 # basketball_reg
 
-A light-weight and mobile-first app that helps to gather the intention to play the basketball on weekends.
+A light-weight and mobile-first app that helps to gather the intention to play basketball on weekends.
 
 Features:
 1. Automatic refresh the date (every Saturday). The cutoff time is Saturday midnight ET.
 2. Persistent user information. Only needs to add once, and the users will be carried over to next week.
 
 ### Open source framework used:
-- Python web framework: https://flask.palletsprojects.com/en/2.0.x/
-- CSS framework: https://bulma.io
+- Flask - Python web development framework: https://flask.palletsprojects.com/en/2.0.x/
+- Bulma - CSS framework: https://bulma.io
 
 ### Project structure
 ```
