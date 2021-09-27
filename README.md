@@ -1,7 +1,25 @@
 
-### basketball_reg
+# basketball_reg
 
+A light-weight and mobile-first app that helps to gather the intention to play the basketball on weekends.
+
+Features:
+1. Automatic refresh the date (every Saturday). The cutoff time is Saturday midnight ET.
+2. Persistent user information. Only needs to add once, and the users will be carried over to next week.
+
+### Open source framework used:
 - Python web framework: https://flask.palletsprojects.com/en/2.0.x/
 - CSS framework: https://bulma.io
-- Deployment (Free): http://pythonanywhere.com
-- Deployment (Ubuntu): https://www.linode.com/docs/guides/flask-and-gunicorn-on-ubuntu/
+
+### Project structure
+```
+|- basketball_reg.py (Main entrance that drives all the logic)
+|- templates (folder for all the front-end templates)
+        |- index.html (Main front-end page)
+        |- error.html (Error page)
+|- db_schema.sql (SQLite3 schema file to recover/rebuild the database)
+```
+
+### Deployment
+- Pythonanywhere (free): http://pythonanywhere.com
+- Ubuntu: https://www.linode.com/docs/guides/flask-and-gunicorn-on-ubuntu/
