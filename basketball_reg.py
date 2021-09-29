@@ -79,7 +79,7 @@ def index(is_admin=False):
         return render_template('error.html', error_message=err)
 
     unregistered_users = [user for user in all_users if user not in registered_users]
-    # logger.info('unregistered_users: ' + str(unregistered_users))
+    logger.info('unregistered_users: ' + str(unregistered_users))
 
     return render_template(
         'index.html',
@@ -135,9 +135,9 @@ def register(user_id):
     return redirect(url_for('index'))
 
 
-@app.route("/unregister/<user_id>")
+@app.route("/deregister/<user_id>")
 @limiter.limit('2 per hour', override_defaults=True)
-def unregister(user_id):
+def deregister(user_id):
     current_date = get_current_date()
 
     # DB preparation
