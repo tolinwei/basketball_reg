@@ -97,7 +97,7 @@ def admin():
 
 
 @app.route("/register/<user_id>")
-@limiter.limit('2 per hour', override_defaults=True)
+@limiter.limit('2/hour;5/day')
 def register(user_id):
     # This URL cannot be access directly
     # otherwise the date may not have been created (edge case though)
@@ -136,7 +136,7 @@ def register(user_id):
 
 
 @app.route("/deregister/<user_id>")
-@limiter.limit('2 per hour', override_defaults=True)
+@limiter.limit('2/hour;5/day')
 def deregister(user_id):
     current_date = get_current_date()
 
@@ -163,6 +163,7 @@ def deregister(user_id):
 
 
 @app.route("/add_user", methods=['POST'])
+@limiter.limit('2/day')
 def add_user():
     name = request.form['name']
     # Invalid input
@@ -183,7 +184,7 @@ def add_user():
 
 
 @app.route("/delete/<user_id>")
-@limiter.limit('1 per hour', override_defaults=True)
+@limiter.limit('2/day')
 def delete(user_id):
     current_date = get_current_date()
 
@@ -208,7 +209,7 @@ def delete(user_id):
 
 
 @app.route("/change_address", methods=['POST'])
-@limiter.limit('2 per hour', override_defaults=True)
+@limiter.limit('2 per day')
 def change_address():
     # DB preparation
     conn = get_conn()
@@ -221,8 +222,7 @@ def change_address():
     if len(name) == 0 or len(name) > 64 or len(map_link) == 0:
         return 'Both fields cannot be empty and name needs to be shorter than 64'
     try:
-        change_address_update = cursor.execute(
-            'update address set name = "' + name + '", map_link = "' + map_link + '" where id = 1 ')
+        change_address_update = cursor.execute('update address set name = "' + name + '", map_link = "' + map_link + '" where id = 1 ')
         conn.commit()
     except sqlite3.Error as err:
         logger.error(err)
@@ -250,7 +250,7 @@ def test_error():
 
 
 @app.route('/test_limiter')
-@limiter.limit('2 per hour', override_defaults=True)
+@limiter.limit('2 per hour')
 def test_limiter():
     return render_template(
         'error.html',
@@ -277,6 +277,3 @@ def get_current_date():
     current_date = pendulum.yesterday('America/New_York').next(pendulum.SATURDAY).strftime('%Y-%m-%d')
     return current_date
 
-
-def get_user():
-    return request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
