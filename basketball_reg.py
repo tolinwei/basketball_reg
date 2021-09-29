@@ -257,6 +257,11 @@ def test_limiter():
         error_message='Primar lorem ipsum dolor sit amet, consectetur adipiscing elit lorem ipsum dolor.')
 
 
+@app.route('/test_login')
+def test_login():
+    return render_template('login.html')
+
+
 # https://flask.palletsprojects.com/en/2.0.x/patterns/sqlite3/
 def get_conn():
     conn = getattr(g, '_database', None)
