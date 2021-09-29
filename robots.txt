@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /register/
+Disallow: /deregister/
+Disallow: /add_user/
