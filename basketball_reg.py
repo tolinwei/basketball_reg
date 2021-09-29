@@ -1,4 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import pendulum
 from flask import g
 import sqlite3
@@ -7,11 +9,15 @@ import logging
 DATABASE = 'basketball_reg.sqlite'
 
 app = Flask(__name__)
+limiter = Limiter(
+    app,
+    key_func=get_remote_address
+)
 logger = logging.getLogger()
+
 
 @app.route("/")
 def index(is_admin=False):
-
     # Fetch next Saturday, based on current timestamp
     # Cutoff is Saturday 12AM ET (or the timezone of the server?)
     current_date = get_current_date()
@@ -22,14 +28,13 @@ def index(is_admin=False):
 
     # Check if there's such record in SQLite3, if not insert
     # into "week" table (id, date, note)
-    current_date_select = None
     try:
         current_date_select = cursor.execute('select * from date where date = "' + current_date + '"')
     except sqlite3.Error as err:
         logger.error(err)
         return render_template('error.html', error_message=err)
 
-    if current_date_select is not None and len(current_date_select.fetchall()) == 0:
+    if len(current_date_select.fetchall()) == 0:
         logger.info('New date, inserting')
         try:
             new_date_insert = cursor.execute('insert into date (date) values ("' + current_date + '")')
@@ -92,6 +97,7 @@ def admin():
 
 
 @app.route("/register/<user_id>")
+@limiter.limit('2 per hour', override_defaults=True)
 def register(user_id):
     # This URL cannot be access directly
     # otherwise the date may not have been created (edge case though)
@@ -130,6 +136,7 @@ def register(user_id):
 
 
 @app.route("/unregister/<user_id>")
+@limiter.limit('2 per hour', override_defaults=True)
 def unregister(user_id):
     current_date = get_current_date()
 
@@ -176,6 +183,7 @@ def add_user():
 
 
 @app.route("/delete/<user_id>")
+@limiter.limit('1 per hour', override_defaults=True)
 def delete(user_id):
     current_date = get_current_date()
 
@@ -200,6 +208,7 @@ def delete(user_id):
 
 
 @app.route("/change_address", methods=['POST'])
+@limiter.limit('2 per hour', override_defaults=True)
 def change_address():
     # DB preparation
     conn = get_conn()
@@ -237,6 +246,13 @@ def test_error():
     return render_template(
         'error.html',
         error_message='Primar lorem ipsum dolor sit amet, consectetur adipiscing elit lorem ipsum dolor.')
+
+
+@app.route('/test_limiter')
+@limiter.limit('2 per hour', override_defaults=True)
+def test_limiter():
+    return index(False)
+
 
 # https://flask.palletsprojects.com/en/2.0.x/patterns/sqlite3/
 def get_conn():
