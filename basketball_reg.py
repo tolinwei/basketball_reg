@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request
 from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from flask_limiter.util import get_ipaddr
 import pendulum
 from flask import g
 import sqlite3
@@ -11,7 +11,7 @@ DATABASE = 'basketball_reg.sqlite'
 app = Flask(__name__)
 limiter = Limiter(
     app,
-    key_func=get_remote_address
+    key_func=get_ipaddr
 )
 logger = logging.getLogger()
 
@@ -221,7 +221,8 @@ def change_address():
     if len(name) == 0 or len(name) > 64 or len(map_link) == 0:
         return 'Both fields cannot be empty and name needs to be shorter than 64'
     try:
-        change_address_update = cursor.execute('update address set name = "' + name + '", map_link = "' + map_link + '" where id = 1 ')
+        change_address_update = cursor.execute(
+            'update address set name = "' + name + '", map_link = "' + map_link + '" where id = 1 ')
         conn.commit()
     except sqlite3.Error as err:
         logger.error(err)
@@ -251,7 +252,9 @@ def test_error():
 @app.route('/test_limiter')
 @limiter.limit('2 per hour', override_defaults=True)
 def test_limiter():
-    return index(False)
+    return render_template(
+        'error.html',
+        error_message='Primar lorem ipsum dolor sit amet, consectetur adipiscing elit lorem ipsum dolor.')
 
 
 # https://flask.palletsprojects.com/en/2.0.x/patterns/sqlite3/
@@ -274,3 +277,6 @@ def get_current_date():
     current_date = pendulum.yesterday('America/New_York').next(pendulum.SATURDAY).strftime('%Y-%m-%d')
     return current_date
 
+
+def get_user():
+    return request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
