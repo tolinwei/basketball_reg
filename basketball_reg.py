@@ -1,22 +1,61 @@
+import json
+import logging
+import pprint
+import sqlite3
+import time
+
+import pendulum
+import requests
 from flask import Flask, render_template, redirect, url_for, request
+from flask import g
 from flask_limiter import Limiter
 from flask_limiter.util import get_ipaddr
-import pendulum
-from flask import g
-import sqlite3
-import logging
+from flask_login import LoginManager, login_required, login_user, UserMixin, logout_user
+
+# Logging statement for local dev environment, will break in Pythonanywhere
+# from logging.config import dictConfig
+#
+# dictConfig({
+#     'version': 1,
+#     'formatters': {'default': {
+#         'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+#     }},
+#     'handlers': {'wsgi': {
+#         'class': 'logging.StreamHandler',
+#         'stream': 'ext://flask.logging.wsgi_errors_stream',
+#         'formatter': 'default'
+#     }},
+#     'root': {
+#         'level': 'INFO',
+#         'handlers': ['wsgi']
+#     }
+# })
 
 DATABASE = 'basketball_reg.sqlite'
+PASSWORD = '<PASSWORD>'
+WEATHER_LOC_LAT = 42.3622133
+WEATHER_LOC_LONG = -71.1175175
+WEATHER_API_KEY = '<WEATHER_API_KEY>'
 
 app = Flask(__name__)
+logger = logging.getLogger()
+
+# Flask-Limiter
 limiter = Limiter(
     app,
     key_func=get_ipaddr
 )
-logger = logging.getLogger()
+
+# Flask-Login
+# python -c 'import os; print(os.urandom(16))'
+app.config['SECRET_KEY'] = b'"C(C\xf4$\nK \x97\xfa\xc2t\x0c\xc6\x85'
+login_manager = LoginManager()
+login_manager.login_view = 'login'
+login_manager.init_app(app)
 
 
-@app.route("/")
+@app.route('/')
+@login_required
 def index(is_admin=False):
     # Fetch next Saturday, based on current timestamp
     # Cutoff is Saturday 12AM ET (or the timezone of the server?)
@@ -45,6 +84,31 @@ def index(is_admin=False):
     else:
         logger.info('Date already exists')
 
+    # Weather
+    weather_response = requests.get(
+        'https://api.openweathermap.org/data/2.5/onecall'
+        + '?lat=' + str(WEATHER_LOC_LAT)
+        + '&lon=' + str(WEATHER_LOC_LONG)
+        + '&exclude=current,minutely,hourly,alerts'
+        + '&units=metric&lang=zh_cn'
+        + '&appid=' + WEATHER_API_KEY
+    )
+    weather_response_dict = json.loads(weather_response.text)
+
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(weather_response_dict)
+
+    if 'daily' in weather_response_dict:
+        for day_forecast in weather_response_dict['daily']:
+            if time.strftime('%Y-%m-%d', time.localtime(day_forecast['dt'])) == current_date:
+                day_temp = day_forecast['temp']['day']
+                weather_description = day_forecast['weather'][0]['description']
+                app.logger.info(day_temp)
+                app.logger.info(weather_description)
+    else:
+        day_temp = 0
+        weather_description = 'Error'
+
     # Address
     try:
         address_select = cursor.execute('select name, map_link from address')
@@ -67,7 +131,7 @@ def index(is_admin=False):
         return render_template('error.html', error_message=err)
     # The fetchall() is a list of tuple
     registered_users = registered_users_select.fetchall()
-    # logger.info('registered_users: ' + str(registered_users))
+    logger.info('registered_users: ' + str(registered_users))
 
     # Bottom part of the page, list all users, minus the
     # registered ones this week.
@@ -84,6 +148,8 @@ def index(is_admin=False):
     return render_template(
         'index.html',
         current_date=current_date,
+        day_temp=day_temp,
+        weather_description=weather_description,
         address=address[0],
         registered_users=registered_users,
         unregistered_users=unregistered_users,
@@ -92,12 +158,14 @@ def index(is_admin=False):
 
 
 @app.route("/admin")
+@login_required
 def admin():
     return index(True)
 
 
 @app.route("/register/<user_id>")
 @limiter.limit('2/hour;5/day')
+@login_required
 def register(user_id):
     # This URL cannot be access directly
     # otherwise the date may not have been created (edge case though)
@@ -137,6 +205,7 @@ def register(user_id):
 
 @app.route("/deregister/<user_id>")
 @limiter.limit('2/hour;5/day')
+@login_required
 def deregister(user_id):
     current_date = get_current_date()
 
@@ -164,6 +233,7 @@ def deregister(user_id):
 
 @app.route("/add_user", methods=['POST'])
 @limiter.limit('2/day')
+@login_required
 def add_user():
     name = request.form['name']
     # Invalid input
@@ -185,6 +255,7 @@ def add_user():
 
 @app.route("/delete/<user_id>")
 @limiter.limit('2/day')
+@login_required
 def delete(user_id):
     current_date = get_current_date()
 
@@ -210,6 +281,7 @@ def delete(user_id):
 
 @app.route("/change_address", methods=['POST'])
 @limiter.limit('2 per day')
+@login_required
 def change_address():
     # DB preparation
     conn = get_conn()
@@ -281,4 +353,45 @@ def close_conn(exception):
 def get_current_date():
     current_date = pendulum.yesterday('America/New_York').next(pendulum.SATURDAY).strftime('%Y-%m-%d')
     return current_date
+
+
+# User login and persistence
+class User(UserMixin):
+    def __init__(self, id):
+        self.id = id  # required by Flask-Login, has to be named as `id`
+
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    else:  # login authentication
+        password = request.form['password']
+        if password == PASSWORD:
+            user = User(1)
+            login_user(user)
+            # Safety check (skip)
+            # next = flask.request.args.get('next')
+            return redirect(url_for('index'))
+        else:
+            logger.info('Wrong password')
+            return render_template(
+                'error.html',
+                error_message='密码错误'
+            )
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
+# Flask-Login
+# callback to reload the user object
+@login_manager.user_loader
+def load_user(user_id):
+    return User(user_id)
+
 
