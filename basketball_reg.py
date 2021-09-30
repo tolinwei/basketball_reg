@@ -157,13 +157,13 @@ def index(is_admin=False):
     )
 
 
-@app.route("/admin")
+@app.route('/admin')
 @login_required
 def admin():
     return index(True)
 
 
-@app.route("/register/<user_id>")
+@app.route('/register/<user_id>')
 @limiter.limit('2/hour;5/day')
 @login_required
 def register(user_id):
@@ -203,7 +203,7 @@ def register(user_id):
     return redirect(url_for('index'))
 
 
-@app.route("/deregister/<user_id>")
+@app.route('/deregister/<user_id>')
 @limiter.limit('2/hour;5/day')
 @login_required
 def deregister(user_id):
@@ -231,7 +231,7 @@ def deregister(user_id):
     return redirect(url_for('index'))
 
 
-@app.route("/add_user", methods=['POST'])
+@app.route('/add_user', methods=['POST'])
 @limiter.limit('2/day')
 @login_required
 def add_user():
@@ -253,7 +253,7 @@ def add_user():
     return redirect(url_for('index'))
 
 
-@app.route("/delete/<user_id>")
+@app.route('/delete/<user_id>')
 @limiter.limit('2/day')
 @login_required
 def delete(user_id):
@@ -279,7 +279,7 @@ def delete(user_id):
     return redirect(url_for('admin'))
 
 
-@app.route("/change_address", methods=['POST'])
+@app.route('/change_address', methods=['POST'])
 @limiter.limit('2 per day')
 @login_required
 def change_address():
