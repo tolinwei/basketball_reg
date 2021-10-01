@@ -95,19 +95,18 @@ def index(is_admin=False):
     )
     weather_response_dict = json.loads(weather_response.text)
 
-    pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(weather_response_dict)
+    # pp = pprint.PrettyPrinter(indent=4)
+    # pp.pprint(weather_response_dict)
 
+    day_temp = 0
+    weather_description = 'Error'
     if 'daily' in weather_response_dict:
         for day_forecast in weather_response_dict['daily']:
             if time.strftime('%Y-%m-%d', time.localtime(day_forecast['dt'])) == current_date:
                 day_temp = day_forecast['temp']['day']
                 weather_description = day_forecast['weather'][0]['description']
-                app.logger.info(day_temp)
-                app.logger.info(weather_description)
-    else:
-        day_temp = 0
-        weather_description = 'Error'
+    app.logger.info(day_temp)
+    app.logger.info(weather_description)
 
     # Address
     try:
