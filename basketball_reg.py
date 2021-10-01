@@ -32,10 +32,10 @@ from flask_login import LoginManager, login_required, login_user, UserMixin, log
 # })
 
 DATABASE = 'basketball_reg.sqlite'
-PASSWORD = '<PASSWORD>'
+PASSWORD = '321'
 WEATHER_LOC_LAT = 42.3622133
 WEATHER_LOC_LONG = -71.1175175
-WEATHER_API_KEY = '<WEATHER_API_KEY>'
+WEATHER_API_KEY = '89c5961be7d84901dded78be383464db'
 
 app = Flask(__name__)
 logger = logging.getLogger()
@@ -351,7 +351,7 @@ def close_conn(exception):
 
 
 def get_current_date():
-    current_date = pendulum.yesterday('America/New_York').next(pendulum.SATURDAY).strftime('%Y-%m-%d')
+    current_date = pendulum.tomorrow('America/New_York').next(pendulum.SATURDAY).strftime('%Y-%m-%d')
     return current_date
 
 
