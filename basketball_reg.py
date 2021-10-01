@@ -351,7 +351,7 @@ def close_conn(exception):
 
 
 def get_current_date():
-    current_date = pendulum.tomorrow('America/New_York').next(pendulum.SATURDAY).strftime('%Y-%m-%d')
+    current_date = pendulum.yesterday('America/New_York').next(pendulum.SATURDAY).strftime('%Y-%m-%d')
     return current_date
 
 
