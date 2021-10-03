@@ -1,143 +1,153 @@
 <!doctype html>
 <html lang="en">
-<html>
-    <head>
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- Bulma CSS -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-    </head>
-    <body>
-        <div class="section hero is-info">
-            <div class="container">
-                <h1 class="title">
-                    周六打篮球
-                </h1>
-                <p>
-                    日期：{{ current_date }} | 10:00 AM ET
-                </p>
-                <p>
-                    天气：{{ weather_description }} | 气温: {{ day_temp }} ℃
-                </p>
-                <p>
-                    <!-- Hack to the link to normalize the log in WeChat browser -->
-                    地点：{{ address[0] }} | <a href="{{ address[1] }}" target="_blank" style="text-decoration: none; color: white">Google Map</a>
-                </p>
-            </div>
-        </div>
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bulma CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+</head>
+<body>
+<div class="section hero is-info">
+  <div class="container">
+    <p class="title is-3">
+      周六打篮球
+    </p>
+    <p>
+      日期：{{ current_date }} | 10:00 AM ET
+    </p>
+    <p>
+      天气：{{ weather_description }} | 气温: {{ day_temp }} ℃
+    </p>
+    <p>
+      <!-- Hack to the link to normalize the log in WeChat browser -->
+      地点：{{ address[0] }} | <a href="{{ address[1] }}" target="_blank" style="text-decoration: none; color: white">Google
+      Map</a>
+    </p>
+  </div>
+</div>
 
-        <!-- Leaving some space below the header -->
-        <div class="block">
-        </div>
+<!-- Leaving some space below the header -->
+<div class="block">
+</div>
 
-        <progress class="progress is-success" value="{{ registered_users|length * 100 / (unregistered_users|length + registered_users|length) }}" max="100">
-            {{ registered_users|length * 100 / (unregistered_users|length + registered_users|length) }}
-        </progress>
+<progress class="progress is-success"
+          value="{{ registered_users|length * 100 / (unregistered_users|length + registered_users|length) }}" max="100">
+  {{ registered_users|length * 100 / (unregistered_users|length + registered_users|length) }}
+</progress>
 
-        <nav class="panel is-success">
-            <p class="panel-heading">
-                我要参加 ({{ registered_users|length }}人)
-            </p>
-            {% for user in registered_users %}
-            <a class="panel-block is-active" href="/deregister/{{ user[0] }}">
+<nav class="panel is-success">
+  <p class="panel-heading">
+    我要参加 ({{ registered_users|length }}人)
+  </p>
+  {% for user in registered_users %}
+    <a class="panel-block is-active" href="/deregister/{{ user[0] }}">
                 <span class="panel-icon">
-                    <i class="fas fa-book" aria-hidden="true"></i>
+                    <i class="fas fa-train" aria-hidden="true"></i>
                 </span>
-                {{ user[1] }}
-            </a>
-            {% endfor %}
-        </nav>
+      {{ user[1] }}
+    </a>
+  {% endfor %}
+</nav>
 
-        <nav class="panel is-warning">
-            <p class="panel-heading">
-                我不参加
-            </p>
-            {% for user in unregistered_users %}
-            <a class="panel-block is-active" href="/register/{{ user[0] }}">
+<nav class="panel is-warning">
+  <p class="panel-heading">
+    我不参加
+  </p>
+  {% for user in unregistered_users %}
+    <a class="panel-block is-active" href="/register/{{ user[0] }}">
                 <span class="panel-icon">
-                    <i class="fas fa-book" aria-hidden="true"></i>
+                    <i class="fas fa-home" aria-hidden="true"></i>
                 </span>
-                {{ user[1] }}
-            </a>
-            {% endfor %}
-        </nav>
+      {{ user[1] }}
+    </a>
+  {% endfor %}
+</nav>
 
-        <div class="block">
-            <form action="/add_user" class="box" method="post">
-                <div class="field is-grouped is-grouped-centered">
-                    <label class="label">新成员</label>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <input class="input is-info" type="text" name="name" placeholder="姓名 | 昵称">
-                    </div>
-                </div>
-                 <div class="field is-grouped is-grouped-centered">
-                    <div class="control">
-                        <input type="submit" class="button is-info" value="添加">
-                    </div>
-                </div>
-            </form>
-        </div>
+<div class="block">
+  <form action="/add_user" class="box" method="post">
+    <div class="field is-grouped is-grouped-centered">
+      <label class="label">新成员</label>
+    </div>
+    <div class="field">
+      <div class="control">
+        <input class="input is-info" type="text" name="name" placeholder="姓名 | 昵称">
+      </div>
+    </div>
+    <div class="field is-grouped is-grouped-centered">
+      <div class="control">
+        <input type="submit" class="button is-info" value="添加">
+      </div>
+    </div>
+  </form>
+</div>
 
-        {% if is_admin %}
-        <nav class="panel is-danger">
-            <p class="panel-heading">
-                删除成员
-            </p>
-            {% for user in unregistered_users %}
-            <a class="panel-block is-active" href="/delete/{{ user[0] }}">
+{% if is_admin %}
+  <nav class="panel is-danger">
+    <p class="panel-heading">
+      删除成员
+    </p>
+    {% for user in unregistered_users %}
+      <a class="panel-block is-active" href="/delete/{{ user[0] }}">
                 <span class="panel-icon">
-                    <i class="fas fa-book" aria-hidden="true"></i>
+                    <i class="fas fa-ban" aria-hidden="true"></i>
                 </span>
-                {{ user[1] }}
-            </a>
-            {% endfor %}
-        </nav>
-        {% endif %}
+        {{ user[1] }}
+      </a>
+    {% endfor %}
+  </nav>
+{% endif %}
 
-        {% if is_admin %}
-        <div class="block">
-            <form action="/change_address" class="box" method="post">
-                <div class="field is-grouped is-grouped-centered">
-                    <label class="label">修改地点</label>
-                </div>
-                <div class="field">
+{% if is_admin %}
+  <div class="block">
+    <form action="/change_address" class="box" method="post">
+      <div class="field is-grouped is-grouped-centered">
+        <label class="label">修改地点</label>
+      </div>
+      <div class="field">
 
-                    <div class="control">
-                        <input class="input is-info" type="text" name="name" placeholder="地点名称">
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <input class="input is-info" type="text" name="map_link" placeholder="地图链接">
-                    </div>
-                </div>
-                <div class="field is-grouped is-grouped-centered">
-                    <div class="control">
-                        <input type="submit" class="button is-info" value="修改">
-                    </div>
-                </div>
-            </form>
+        <div class="control">
+          <input class="input is-info" type="text" name="name" placeholder="地点名称">
         </div>
-        {% endif %}
-
-        <div class="block">
-            <div class="field is-grouped is-grouped-centered">
-                <a href="/logout" class="button is-light">登出</a>
-            </div>
+      </div>
+      <div class="field">
+        <div class="control">
+          <input class="input is-info" type="text" name="map_link" placeholder="地图链接">
         </div>
+      </div>
+      <div class="field is-grouped is-grouped-centered">
+        <div class="control">
+          <input type="submit" class="button is-info" value="修改">
+        </div>
+      </div>
+    </form>
+  </div>
+{% endif %}
 
-        <footer class="footer">
-            <div class="content has-text-centered">
-                <p>
-                    <a href="https://github.com/tolinwei/basketball_reg" target="_blank"><img src="https://github-link-card.s3.ap-northeast-1.amazonaws.com/tolinwei/basketball_reg.png" width="460px"></a>
-                </p>
-            </div>
-        </footer>
+<div class="block">
+  <div class="field is-grouped is-grouped-centered">
+    <a href="/logout" class="button is-light">登出</a>
+  </div>
+</div>
 
-    </body>
+<footer class="footer">
+  <div class="content has-text-centered">
+    {%  if is_admin %}
+    <div class="field is-grouped is-grouped-centered">
+      <a target="_blank" class="button is-light" href="https://xmxclhd5.status.cron-job.org/">运行状态</a>
+    </div>
+    {% endif %}
+    <p>
+      <a href="https://github.com/tolinwei/basketball_reg" target="_blank"><img
+          src="https://github-link-card.s3.ap-northeast-1.amazonaws.com/tolinwei/basketball_reg.png" width="460px"></a>
+    </p>
+  </div>
+</footer>
+
+<!-- Load icon -->
+<!-- https://stackoverflow.com/questions/47682110/bulma-icon-not-showing-up -->
+<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+</body>
 </html>
 
 
