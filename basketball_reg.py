@@ -317,7 +317,7 @@ def test_error():
 
     return render_template(
         'error.html',
-        error_message='Primar lorem ipsum dolor sit amet, consectetur adipiscing elit lorem ipsum dolor.')
+        error_message='这是一个测试页面，这里显示的不是真实的错误信息。')
 
 
 @app.route('/test_limiter')
@@ -325,7 +325,7 @@ def test_error():
 def test_limiter():
     return render_template(
         'error.html',
-        error_message='Primar lorem ipsum dolor sit amet, consectetur adipiscing elit lorem ipsum dolor.')
+        error_message='这是一个测试页面，这里显示的不是真实的错误信息。')
 
 
 @app.route('/test_login')
